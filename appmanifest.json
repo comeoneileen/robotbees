@@ -1,6 +1,6 @@
 {
-	"name": "The Bakken Virtual Lab - Beebot",
-	"short_name": "The Bakken Virtual Lab - Beebot",
+	"name": "Beebot",
+	"short_name": "Beebot",
 	"description": "",
 	"start_url": "index.html",
 	"display": "fullscreen",
