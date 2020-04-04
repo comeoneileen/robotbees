@@ -557,6 +557,18 @@ self["C3_Shaders"] = {};
 
 "use strict";C3.Behaviors.Pin.Exps={PinnedUID(){return this._pinInst?this._pinInst.GetUID():-1}};
 
+"use strict";C3.Behaviors.destroy=class extends C3.SDKBehaviorBase{constructor(a){super(a)}Release(){super.Release()}};
+
+"use strict";C3.Behaviors.destroy.Type=class extends C3.SDKBehaviorTypeBase{constructor(a){super(a)}Release(){super.Release()}OnCreate(){}};
+
+"use strict";C3.Behaviors.destroy.Instance=class extends C3.SDKBehaviorInstanceBase{constructor(a){super(a),this._StartTicking()}Release(){super.Release()}Tick(){const a=this._inst.GetWorldInfo(),b=a.GetBoundingBox(),c=a.GetLayout();(0>b.getRight()||0>b.getBottom()||b.getLeft()>c.GetWidth()||b.getTop()>c.GetHeight())&&this._runtime.DestroyInstance(this._inst)}};
+
+"use strict";C3.Behaviors.destroy.Cnds={};
+
+"use strict";C3.Behaviors.destroy.Acts={};
+
+"use strict";C3.Behaviors.destroy.Exps={};
+
 "use strict"
 self.C3_GetObjectRefTable = function () {
 	return [
@@ -567,6 +579,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Touch,
 		C3.Behaviors.Pin,
 		C3.Plugins.Audio,
+		C3.Behaviors.destroy,
 		C3.Plugins.System.Cnds.OnLayoutStart,
 		C3.Plugins.System.Acts.SetGroupActive,
 		C3.Behaviors.Pin.Acts.Pin,
@@ -582,21 +595,30 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Sprite.Cnds.IsAnimPlaying,
 		C3.Plugins.Sprite.Acts.SetAnim,
 		C3.Plugins.Arr.Acts.Push,
+		C3.Plugins.Audio.Acts.Play,
 		C3.Plugins.Sprite.Cnds.OnAnimFinished,
 		C3.Plugins.System.Acts.SetVar,
+		C3.Plugins.System.Cnds.Else,
 		C3.Plugins.Touch.Cnds.IsTouchingObject,
 		C3.Behaviors.DragnDrop.Acts.Drop,
 		C3.Plugins.System.Cnds.IsGroupActive,
 		C3.Plugins.System.Cnds.Every,
 		C3.Plugins.System.Cnds.CompareVar,
 		C3.Plugins.Arr.Exps.Width,
-		C3.Plugins.System.Cnds.Else,
 		C3.Plugins.System.Acts.AddVar,
 		C3.Plugins.Touch.Cnds.OnTouchObject,
 		C3.Plugins.Arr.Cnds.ArrForEach,
 		C3.Plugins.Arr.Acts.Delete,
 		C3.Plugins.Arr.Exps.CurValue,
-		C3.Plugins.Audio.Acts.Play
+		C3.Plugins.System.Acts.CreateObject,
+		C3.Plugins.Sprite.Exps.X,
+		C3.Plugins.Sprite.Exps.Y,
+		C3.Plugins.Sprite.Exps.AnimationName,
+		C3.Plugins.Sprite.Acts.SetAnimFrame,
+		C3.Plugins.Sprite.Exps.AnimationFrame,
+		C3.Plugins.Sprite.Exps.AnimationFrameCount,
+		C3.Plugins.Touch.Cnds.OnDoubleTapGestureObject,
+		C3.Plugins.Sprite.Acts.Destroy
 	];
 };
 self.C3_JsPropNameTable = [
@@ -615,7 +637,12 @@ self.C3_JsPropNameTable = [
 	{Audio: 0},
 	{Sound: 0},
 	{grid: 0},
-	{Cone: 0},
+	{DestroyOutsideLayout: 0},
+	{Obstacle: 0},
+	{miniObstactle: 0},
+	{nextBGButton: 0},
+	{miniSticker: 0},
+	{sticker: 0},
 	{timer: 0},
 	{segments: 0}
 ];
@@ -747,12 +774,18 @@ self.C3_JsPropNameTable = [
 		},
 		() => "P",
 		() => 0,
+		() => "waiting",
 		() => "Animation 1",
 		() => "Animation 2",
+		() => "blink",
 		p => {
 			const n0 = p._GetNode(0);
 			return () => n0.ExpInstVar();
 		},
+		() => "Check",
+		() => -5,
+		() => "",
+		() => "moving",
 		() => 2.5,
 		p => {
 			const n0 = p._GetNode(0);
@@ -760,10 +793,16 @@ self.C3_JsPropNameTable = [
 		},
 		() => "done",
 		() => 1,
-		() => "moving",
-		() => "Check",
-		() => "",
-		() => "Uncheck"
+		() => "Uncheck",
+		p => {
+			const n0 = p._GetNode(0);
+			return () => (n0.ExpObject() + 90);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			const n1 = p._GetNode(1);
+			return () => ((n0.ExpObject() + 1) % n1.ExpObject());
+		}
 	];
 }
 
